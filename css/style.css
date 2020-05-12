@@ -1,0 +1,24 @@
+th {
+  text-align: center;
+}
+
+.sm-cell {
+  max-width: 50px;
+}
+
+.md-cell {
+  max-width: 75px;
+}
+
+.lg-cell {
+  width: 100px;
+}
+
+.cell-input {
+  width: 100%;
+}
+
+#drawing-area {
+  width: 100%;
+  height: 75vh;
+}

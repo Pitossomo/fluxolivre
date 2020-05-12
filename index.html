@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <!-- Metatags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="title" content="Fluxo Livre">
+  <meta name="description" content="Projeto hidráulico para tubulações circulares em regime de escoamento livre, utilizadas em esgotamento e drenagem. ">
+  <meta name="keywords" content="projeto, perfil longitudinal, esgoto, drenagem, escoamento livre">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="Portuguese">
+  <meta name="author" content="Pitossomo">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div id="forms-col" class="col-sm">
+        <form class="form-group">
+          <table id="points-table" class="table table-hover table-sm table-responsive">
+            <thead>
+              <th class="sm-cell">Nome</th>
+              <th class="lg-cell">X (m)</th>
+              <th class="lg-cell">Y (m)</th>
+              <th class="md-cell">Elev. (m)</th>
+            </thead>
+            <tbody>
+              <tr class="point-row">
+                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="name"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="md-cell"><input class="form-control cell-input text-right"></td>
+              </tr>
+              <tr class="point-row">
+                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="name"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="md-cell"><input class="form-control cell-input text-right"></td>
+              </tr>
+              <tr class="point-row">
+                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="name"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right" data-type="x"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right" data-type="y"></td>
+                <td class="md-cell"><input class="form-control cell-input text-right" data-type="z"></td>
+              </tr>
+              <tr class="point-row">
+                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="name"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="md-cell"><input class="form-control cell-input text-right"></td>
+              </tr>
+              <tr class="point-row">
+                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="name"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="lg-cell"><input class="form-control cell-input text-right"></td>
+                <td class="md-cell"><input class="form-control cell-input text-right"></td>
+              </tr>
+            </tbody>
+          </table>
+          <button id="gerarPontosBtn">Gerar pontos</button>
+        </form>
+      </div>
+      <div id="drawing-col" class="col-sm">
+        <svg id="drawing-area">
+          
+        </svg>
+      </div>  
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="js/script.js"></script>
+</body>
+</html>
