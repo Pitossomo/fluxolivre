@@ -14,6 +14,11 @@ th {
   width: 100px;
 }
 
+.xl-cell {
+  width: 125px;
+}
+
+
 .cell-input {
   width: 100%;
 }
@@ -21,4 +26,6 @@ th {
 #drawing-area {
   width: 100%;
   height: 75vh;
+  padding: 12px;
+  border: black;
 }

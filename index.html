@@ -12,7 +12,7 @@
   <meta name="author" content="Pitossomo">
 
   <!-- CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -20,35 +20,91 @@
   <div class="container">
     <div class="row">
       <div id="forms-col" class="col-sm">
-        <form class="form-group">
-          <table id="points-table" class="table table-hover table-sm table-responsive">
-            <thead>
-              <th class="sm-cell">Nome</th>
-              <th class="lg-cell">X (m)</th>
-              <th class="lg-cell">Y (m)</th>
-              <th class="md-cell">Elev. (m)</th>
-            </thead>
-            <tbody>
-              <tr class="point-input-row">
-                <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="id"></td>
-                <td class="lg-cell"><input class="form-control cell-input text-right" data-type="x"></td>
-                <td class="lg-cell"><input class="form-control cell-input text-right" data-type="y"></td>
-                <td class="md-cell"><input class="form-control cell-input text-right" data-type="z"></td>
-              </tr>
-            </tbody>
-          </table>
-          <button id="gerarPontosBtn">Gerar pontos</button>
-        </form>
+        <ul class="nav nav-tabs" id="form-tabs" role="tablist">
+          <li class="nav-link" role="presentation">
+            <a class="nav-link active" id="points-tab" data-toggle="tab" href="#points-form" role="tab" aria-controls="points-form" aria-selected="true">Pontos</a>
+          </li>
+          <li class="nav-link" role="presentation">
+            <a class="nav-link" id="lines-tab" data-toggle="tab" href="#lines-form" role="tab" aria-controls="lines-form" aria-selected="false">Trechos</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="tabContent">
+          <form class="tab-pane fade show active form-group" id="points-form" role="tabpanel" aria-labelledby="points-tab">
+            <table id="points-table" class="table table-hover table-sm table-responsive">
+              <thead>
+                <th class="sm-cell">Nome</th>
+                <th class="xl-cell">X (m)</th>
+                <th class="xl-cell">Y (m)</th>
+                <th class="lg-cell">Elev. (m)</th>
+              </thead>
+              <tbody>
+                <tr class="point-input-row">
+                  <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="id"></td>
+                  <td class="xl-cell"><input class="form-control cell-input text-right" data-type="x"></td>
+                  <td class="xl-cell"><input class="form-control cell-input text-right" data-type="y"></td>
+                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="z"></td>
+                </tr>
+                <tr class="point-display-row">
+                  <th class="sm-cell" scope="row"></th>
+                  <td class="lg-cell"></td>
+                  <td class="lg-cell"></td>
+                  <td class="md-cell"></td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="button" id="gerarPontosBtn">Gerar pontos</button>
+          </form>
+          <form class="tab-pane fade form-group" id="lines-form" role="tabpanel" aria-labelledby="lines-tab">
+            <table id="lines-table" class="table table-hover table-sm table-responsive">
+              <col>
+              <colgroup span="2"></colgroup>
+              <colgroup span="2"></colgroup>
+              <thead>
+                <tr>
+                  <th rowspan="2">Nome</th>
+                  <th colspan="2" scope="colgroup">PV Montante</th>
+                  <th colspan="2" scope="colgroup">PV Jusante</th>  
+                </tr>
+                <tr>
+                  <th class="md-cell">Ponto</th>
+                  <th class="md-cell">Prof. (m)</th>
+                  <th class="md-cell">Ponto</th>
+                  <th class="md-cell">PV (m)</th>  
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="line-input-row">
+                  <th class="md-cell" scope="row"><input class="form-control cell-input text-center" data-type="id"></td>
+                  <td class="md-cell"><input class="form-control cell-input text-right" data-type="p1-id"></td>
+                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="prof1"></td>
+                  <td class="md-cell"><input class="form-control cell-input text-right" data-type="p2-id"></td>
+                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="prof2"></td>
+                </tr>
+                <tr class="line-display-row">
+                  <th class="md-cell" scope="row"></th>
+                  <td class="md-cell"></td>
+                  <td class="lg-cell"></td>
+                  <td class="md-cell"></td>
+                  <td class="lg-cell"></td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="button" id="gerarTrechosBtn">Gerar trechos</button>
+          </form>
+        </div>
       </div>
       <div id="drawing-col" class="col-sm">
-        <svg id="drawing-area">
-          
+        <svg viewbox="0 -100 300 100" id="drawing-area" xmlns="http://www.w3.org/2000/svg">
+          <g id="points-container"></g>
+          <g id="lines-container"></g>
         </svg>
       </div>  
     </div>
   </div>
 
   <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="js/script.js"></script>
 </body>
 </html>
