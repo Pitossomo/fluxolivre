@@ -114,24 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
     drawPoint.setAttributeNS(null,"onclick", "greetings()")
     pointsContainer.appendChild(drawPoint);
 
-    /*
-    // altera as propriedades do desenho
-    xMax = Math.max(drawProperties["xMax"], point.x + DRAW_AREA_OFFSET);
-    xMin = Math.min(drawProperties["xMin"], point.x - DRAW_AREA_OFFSET);
-    yMax = Math.max(drawProperties["yMax"], point.y + DRAW_AREA_OFFSET);
-    yMin = Math.min(drawProperties["yMin"], point.y - DRAW_AREA_OFFSET);
-    zMax = Math.max(drawProperties["zMax"], point.z + DRAW_AREA_OFFSET);
-    zMin = Math.min(drawProperties["zMin"], point.z - DRAW_AREA_OFFSET);
-    drawProperties["xMax"] = xMax;
-    drawProperties["xMin"] = xMin;
-    drawProperties["yMin"] = yMax;
-    drawProperties["yMax"] = yMax;
-    drawProperties["zMax"] = zMax;
-    drawProperties["zMin"] = zMin;
-    dx = Math.max(xMax - xMin, DRAW_AREA_MINIMAL_DIMENSION);
-    dy = Math.max(yMax - yMin, DRAW_AREA_MINIMAL_DIMENSION);
-    drawing.setAttributeNS(null,"viewBox", `${xMin} -${yMax} ${dx} ${dy}`); */
-
     // altera as propriedades do desenho
     bbox = pointsContainer.getBBox();
     drawingArea.setAttributeNS(null, "viewBox", 
@@ -140,12 +122,24 @@ document.addEventListener("DOMContentLoaded", () => {
       `${bbox.width + 2*DRAW_AREA_OFFSET} ` +
       `${bbox.height + 2*DRAW_AREA_OFFSET}`
     )
+
+    var template = document.getElementById("point-row-template");
+    cols = template.content.querySelectorAll("td");
+    cols[0].textContent = pointDict["id"];
+    cols[1].textContent = pointDict["x"];
+    cols[2].textContent = pointDict["y"];
+    cols[3].textContent = pointDict["z"];
+
+    var tbody = document.getElementById("points-tbody");
+    var clone = document.importNode(template.content, true);
+    tbody.appendChild(clone);
   }
 });
 
 function greetings() {
   console.log("Hi, i'm a circle") 
 }
+
 
 // Resgata os valores em uma linha de inputs e retorna um dicionario
 function dataFromInputRow(inputRow) {
