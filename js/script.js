@@ -41,6 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     inputRow = document.querySelector(".line-input-row")
     // resgata os atributos
     lineDict = dataFromInputRow(inputRow);
+    // solicita confirmação para sobrescrever, em caso de linhas com mesmo id
+    overwrite = false;
+    if (lines[lineDict["id"]]) {
+      overwrite = confirm("Já existe um trecho com o nome indicado. Deseje sobrescrevê-lo?");
+      if (!overwrite) {
+        alert("Comando abortado");
+        return;
+      }
+    }
     // Verificar se os pontos indicados existem
     p1 = points[lineDict["p1-id"]];
     p2 = points[lineDict["p2-id"]];
@@ -54,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
       lineDict["p2-id"], Number(lineDict["prof2"])
     )
 
-    // TODO - Verificar a criação de linhas com mesmo id
     // armezena o ponto na variável lines
     lines[lineDict["id"]] = line;
     
@@ -62,8 +70,15 @@ document.addEventListener("DOMContentLoaded", () => {
     drawingArea = document.querySelector("#drawing-area");
     linesContainer = drawingArea.querySelector("#lines-container");
 
-    // desenha a linha atual
-    drawLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    // Desenha o trecho atual
+    //    em caso de sobrescrever, seleciona o trecho existente para atualizá-lo
+    //    caso contrário, cria um novo trecho do zero
+    if (!overwrite) {
+      drawLine = document.createElementNS("http://www.w3.org/2000/svg" , "line");
+    } else {
+      drawLine = linesContainer.querySelector("[data-line-id='"+ lineDict["id"] +"']");
+    }
+    // atribui valores dos atributos do trecho
     drawLine.setAttributeNS(null, "x1", p1.x);
     drawLine.setAttributeNS(null, "y1", -p1.y);
     drawLine.setAttributeNS(null, "x2", p2.x);
@@ -72,21 +87,27 @@ document.addEventListener("DOMContentLoaded", () => {
     drawLine.setAttributeNS(null, "stroke", "black");
     drawLine.setAttributeNS(null, "onhover", "showLineInfo()")
     drawLine.setAttributeNS(null, "data-line-id", lineDict["id"]);
-    drawLine.setAttributeNS(null, "onclick", "greetings()")
-    linesContainer.appendChild(drawLine);
+    drawLine.setAttributeNS(null, "onclick", "greetings()");
+    if (!overwrite) linesContainer.appendChild(drawLine);
 
-    // Insere a linha na tabela
-    var template = document.getElementById("line-row-template");
-    cols = template.content.querySelectorAll("td");
+    // Insere ou sobrescreve a linha na tabela
+    tbody = document.getElementById("lines-tbody");
+    if (!overwrite) {
+      temp = document.querySelector("#line-row-template").content.querySelector("tr");
+      row = document.importNode(temp, true);
+    } else {
+      row = tbody.querySelector("[data-id='"+ lineDict["id"] +"']");
+    }
+    cols = row.querySelectorAll("td");
     cols[0].textContent = lineDict["id"];
     cols[1].textContent = lineDict["p1-id"];
     cols[2].textContent = lineDict["prof1"];
     cols[3].textContent = lineDict["p2-id"];
     cols[4].textContent = lineDict["prof2"];
-
-    var tbody = document.getElementById("line-tbody");
-    var clone = document.importNode(template.content, true);
-    tbody.appendChild(clone);
+    row.setAttribute("data-id", lineDict["id"]);
+    if (!overwrite) {
+      tbody.appendChild(row);
+    }
   }
 
   // adiciona evento onclick no botão "Gerar pontos"
@@ -121,12 +142,15 @@ document.addEventListener("DOMContentLoaded", () => {
     drawingArea = document.querySelector("#drawing-area");
     pointsContainer = drawingArea.querySelector("#points-container");
     
-    // desenha o ponto atual
+    // Desenha o ponto
+    //    em caso de sobrescrição, altera o ponto existente,
+    //    caso contrário, cria um novo ponto do zero
     if (!overwrite) {
       drawPoint = document.createElementNS("http://www.w3.org/2000/svg" , "circle");
     } else {
       drawPoint = pointsContainer.querySelector("[data-point-id='"+ pointDict["id"] +"']");
     }
+    // atribui os valores dos atributos do ponto (novo ou atualizado)
     drawPoint.setAttributeNS(null,"cx", point.x);
     drawPoint.setAttributeNS(null,"cy", -point.y);
     drawPoint.setAttributeNS(null,"cz", point.z);
