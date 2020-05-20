@@ -65,9 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // desenha a linha atual
     drawLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
     drawLine.setAttributeNS(null, "x1", p1.x);
-    drawLine.setAttributeNS(null, "y1", p1.y);
+    drawLine.setAttributeNS(null, "y1", -p1.y);
     drawLine.setAttributeNS(null, "x2", p2.x);
-    drawLine.setAttributeNS(null, "y2", p2.x);
+    drawLine.setAttributeNS(null, "y2", -p2.y);
     drawLine.setAttributeNS(null, "stroke-width", "1%");
     drawLine.setAttributeNS(null, "stroke", "black");
     drawLine.setAttributeNS(null, "onhover", "showLineInfo()")
@@ -75,7 +75,18 @@ document.addEventListener("DOMContentLoaded", () => {
     drawLine.setAttributeNS(null, "onclick", "greetings()")
     linesContainer.appendChild(drawLine);
 
-    console.log(drawingArea, linesContainer, drawLine);
+    // Insere a linha na tabela
+    var template = document.getElementById("line-row-template");
+    cols = template.content.querySelectorAll("td");
+    cols[0].textContent = lineDict["id"];
+    cols[1].textContent = lineDict["p1-id"];
+    cols[2].textContent = lineDict["prof1"];
+    cols[3].textContent = lineDict["p2-id"];
+    cols[4].textContent = lineDict["prof2"];
+
+    var tbody = document.getElementById("line-tbody");
+    var clone = document.importNode(template.content, true);
+    tbody.appendChild(clone);
   }
 
   // adiciona evento onclick no botão "Gerar pontos"
@@ -86,12 +97,22 @@ document.addEventListener("DOMContentLoaded", () => {
     inputRow = document.querySelector(".point-input-row");
     // resgata os atributos
     pointDict = dataFromInputRow(inputRow);
+    // se já houver um ponto com o mesmo id, solicita confirmação
+    overwrite = false;
+    if (points[pointDict["id"]]) {
+      if (confirm("O ponto já existe. Deseja sobrescrever?")) {
+        overwrite = true;
+      } else {
+        alert("Comando abortado");
+        return;
+      }
+    }
+
     // cria um Ponto (instância da classe Point) 
     point = new Point(
       Number(pointDict["x"]),
       Number(pointDict["y"]),
       Number(pointDict["z"]));
-    // TODO - verificar substituição de pontos com mesmo id 
     
     // armazena o ponto na variavel points
     points[pointDict["id"]] = point;
@@ -101,7 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
     pointsContainer = drawingArea.querySelector("#points-container");
     
     // desenha o ponto atual
-    drawPoint = document.createElementNS("http://www.w3.org/2000/svg" , "circle");
+    if (!overwrite) {
+      drawPoint = document.createElementNS("http://www.w3.org/2000/svg" , "circle");
+    } else {
+      drawPoint = pointsContainer.querySelector("[data-point-id='"+ pointDict["id"] +"']");
+    }
     drawPoint.setAttributeNS(null,"cx", point.x);
     drawPoint.setAttributeNS(null,"cy", -point.y);
     drawPoint.setAttributeNS(null,"cz", point.z);
@@ -112,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     drawPoint.setAttributeNS(null, "onhover", "showPointInfo()")
     drawPoint.setAttributeNS(null,"data-point-id", pointDict["id"]);
     drawPoint.setAttributeNS(null,"onclick", "greetings()")
-    pointsContainer.appendChild(drawPoint);
+    if (!overwrite) pointsContainer.appendChild(drawPoint);
 
     // altera as propriedades do desenho
     bbox = pointsContainer.getBBox();
@@ -123,23 +148,49 @@ document.addEventListener("DOMContentLoaded", () => {
       `${bbox.height + 2*DRAW_AREA_OFFSET}`
     )
 
-    var template = document.getElementById("point-row-template");
-    cols = template.content.querySelectorAll("td");
+    // Insere ou sobrescreve a linha referente ao ponto na tabela
+    tbody = document.getElementById("points-tbody");
+    if (!overwrite) {
+      temp = document.querySelector("#point-row-template").content.querySelector("tr");
+      row = document.importNode(temp, true);
+    } else {
+      row = tbody.querySelector("[data-id='"+ pointDict["id"] +"']");
+    }
+    cols = row.querySelectorAll("td");
     cols[0].textContent = pointDict["id"];
     cols[1].textContent = pointDict["x"];
     cols[2].textContent = pointDict["y"];
     cols[3].textContent = pointDict["z"];
-
-    var tbody = document.getElementById("points-tbody");
-    var clone = document.importNode(template.content, true);
-    tbody.appendChild(clone);
+    
+    row.setAttribute("data-id", pointDict["id"]);
+    if (!overwrite) {
+      tbody.appendChild(row);
+    }
   }
+
+  // adiciona evento onfocus nos select inputs
+  loadListOnFocus(document.querySelector("select[data-type='p1-id']"));
+  loadListOnFocus(document.querySelector("select[data-type='p2-id']"));
 });
 
 function greetings() {
   console.log("Hi, i'm a circle") 
 }
 
+// carrega dinamicamente a lista do input select com os pontos existentes
+function loadListOnFocus(selectEl) {
+  selectEl.addEventListener("focus", function(e) {
+    options = document.createElement("optgroup");
+    for (id in points) {
+      option = document.createElement("option");
+      option.textContent = id;
+      option.setAttribute("value", id);
+      options.appendChild(option);
+    }
+    e.target.innerHTML = "";
+    e.target.appendChild(options);
+  });
+}
 
 // Resgata os valores em uma linha de inputs e retorna um dicionario
 function dataFromInputRow(inputRow) {

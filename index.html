@@ -40,9 +40,9 @@
               <tbody id="points-tbody">
                 <tr class="point-input-row">
                   <th class="sm-cell" scope="row"><input class="form-control cell-input text-center" data-type="id"></td>
-                  <td class="xl-cell"><input class="form-control cell-input text-right" data-type="x"></td>
-                  <td class="xl-cell"><input class="form-control cell-input text-right" data-type="y"></td>
-                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="z"></td>
+                  <td class="xl-cell"><input class="form-control cell-input" type="number" step="0.001" data-type="x"></td>
+                  <td class="xl-cell"><input class="form-control cell-input" type="number" step="0.001" data-type="y"></td>
+                  <td class="lg-cell"><input class="form-control cell-input" type="number" step="0.001" data-type="z"></td>
                 </tr>
               </tbody>
             </table>
@@ -66,20 +66,13 @@
                   <th class="md-cell">PV (m)</th>  
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="line-tbody">
                 <tr class="line-input-row">
                   <th class="md-cell" scope="row"><input class="form-control cell-input text-center" data-type="id"></td>
-                  <td class="md-cell"><input class="form-control cell-input text-right" data-type="p1-id"></td>
-                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="prof1"></td>
-                  <td class="md-cell"><input class="form-control cell-input text-right" data-type="p2-id"></td>
-                  <td class="lg-cell"><input class="form-control cell-input text-right" data-type="prof2"></td>
-                </tr>
-                <tr class="line-display-row">
-                  <th class="md-cell" scope="row"></th>
-                  <td class="md-cell"></td>
-                  <td class="lg-cell"></td>
-                  <td class="md-cell"></td>
-                  <td class="lg-cell"></td>
+                  <td class="md-cell"><select class="form-control cell-input" data-type="p1-id"></select></td>
+                  <td class="lg-cell"><input class="form-control cell-input" type="number" step="0.001" data-type="prof1"></td>
+                  <td class="md-cell"><select class="form-control cell-input" data-type="p2-id"></select></td>
+                  <td class="lg-cell"><input class="form-control cell-input" type="number" step="0.001" data-type="prof2"></td>
                 </tr>
               </tbody>
             </table>
@@ -103,11 +96,21 @@
 </body>
 
 <template id="point-row-template">
-  <tr class="point-display-row">
-    <td class="sm-cell" scope="row"></tdg>
-    <td class="lg-cell"></td>
-    <td class="lg-cell"></td>
-    <td class="md-cell"></td>
-  </tr>  
+  <tr class="point-display-row" data-id="">
+    <td class="sm-cell text-center" scope="row"></tdg>
+    <td class="lg-cell text-right"></td>
+    <td class="lg-cell text-right"></td>
+    <td class="md-cell text-right"></td>
+  </tr>
 </template>
+<template id="line-row-template">
+  <tr class="line-display-row" data-id="">
+    <td class="md-cell text-center" scope="row"></td>
+    <td class="md-cell text-center"></td>
+    <td class="lg-cell text-right"></td>
+    <td class="md-cell text-center"></td>
+    <td class="lg-cell text-right"></td>
+  </tr>
+</template>
+
 </html>
