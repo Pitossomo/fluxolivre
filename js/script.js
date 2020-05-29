@@ -1,5 +1,6 @@
-const DRAW_AREA_OFFSET = 5;
+const DRAW_AREA_OFFSET = 0.10;
 const DRAW_AREA_MINIMAL_DIMENSION = 100;
+const DEC_PLACES = 2;
 
 class Point {
   constructor(x,y,z) {
@@ -19,7 +20,6 @@ class Line {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // cria a variável para armazenar os pontos
   points = {};
   lines = {};
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#gerarTrechosBtn").onclick = () => {
     
     // seleciona a linha de input de linhas
-    inputRow = document.querySelector(".line-input-row")
+    inputRow = document.querySelector("#line-input-row")
     // resgata os atributos
     lineDict = dataFromInputRow(inputRow);
     // solicita confirmação para sobrescrever, em caso de linhas com mesmo id
@@ -101,13 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
     cols = row.querySelectorAll("td");
     cols[0].textContent = lineDict["id"];
     cols[1].textContent = lineDict["p1-id"];
-    cols[2].textContent = lineDict["prof1"];
+    cols[2].textContent = line.prof1.toFixed(DEC_PLACES);
     cols[3].textContent = lineDict["p2-id"];
-    cols[4].textContent = lineDict["prof2"];
+    cols[4].textContent = line.prof2.toFixed(DEC_PLACES);
     row.setAttribute("data-id", lineDict["id"]);
     if (!overwrite) {
       tbody.appendChild(row);
     }
+
+    // Incrementa o id do trecho no input da tabela de trechos
+    inputRow.firstElementChild.firstElementChild.value = Object.keys(lines).length;
   }
 
   // adiciona evento onclick no botão "Gerar pontos"
@@ -115,9 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#gerarPontosBtn").onclick = () => {
     
     // seleciona a linha de input de pontos
-    inputRow = document.querySelector(".point-input-row");
+    pointInputs = document.querySelectorAll("#point-input-row input");
+    console.log(pointInputs);
     // resgata os atributos
-    pointDict = dataFromInputRow(inputRow);
+    pointDict = dataFromInputRow(pointInputs, true);
     // se já houver um ponto com o mesmo id, solicita confirmação
     overwrite = false;
     if (points[pointDict["id"]]) {
@@ -165,11 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // altera as propriedades do desenho
     bbox = pointsContainer.getBBox();
+    bboxCenterX = bbox.x + bbox.width/2
+    bboxCenterY = bbox.y + bbox.height/2
     drawingArea.setAttributeNS(null, "viewBox", 
-      `${bbox.x - DRAW_AREA_OFFSET} ` +
-      `${bbox.y - DRAW_AREA_OFFSET} ` +
-      `${bbox.width + 2*DRAW_AREA_OFFSET} ` +
-      `${bbox.height + 2*DRAW_AREA_OFFSET}`
+      `${bboxCenterX - (1+DRAW_AREA_OFFSET)*bbox.width/2} ` +
+      `${bboxCenterY - (1+DRAW_AREA_OFFSET)*bbox.height/2} ` +
+      `${bbox.width*(1+DRAW_AREA_OFFSET)} ` +
+      `${bbox.height*(1+DRAW_AREA_OFFSET)}`
     )
 
     // Insere ou sobrescreve a linha referente ao ponto na tabela
@@ -182,14 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     cols = row.querySelectorAll("td");
     cols[0].textContent = pointDict["id"];
-    cols[1].textContent = pointDict["x"];
-    cols[2].textContent = pointDict["y"];
-    cols[3].textContent = pointDict["z"];
+    cols[1].textContent = point.x.toFixed(DEC_PLACES);
+    cols[2].textContent = point.y.toFixed(DEC_PLACES);
+    cols[3].textContent = point.z.toFixed(DEC_PLACES);
     
     row.setAttribute("data-id", pointDict["id"]);
     if (!overwrite) {
       tbody.appendChild(row);
     }
+
+    // Incrementa o ponto na tabela de pontos e reseta os valores dos demais inputs
+    document.querySelector("#point-id").value = Object.keys(points).length + 1;
   }
 
   // adiciona evento onfocus nos select inputs
@@ -217,13 +226,18 @@ function loadListOnFocus(selectEl) {
 }
 
 // Resgata os valores em uma linha de inputs e retorna um dicionario
-function dataFromInputRow(inputRow) {
+//   *OBS: o segundo parâmetro é um boolean que informa se os inputs serão resetados ou não
+function dataFromInputRow(inputElements, reset) {
   dict = {}
-  for (col of inputRow.children) {
-    input = col.firstChild;
+  for (input of inputElements) {
     key = input.getAttribute("data-type");
     value = input.value;
+    if (reset) input.value = "";
     dict[key] = value;
   }
   return dict;
+}
+
+function dataToTableRow(object, row) {
+  // TODO
 }

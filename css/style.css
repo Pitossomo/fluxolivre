@@ -1,36 +1,61 @@
-th {
-  text-align: center;
+/* Desenho */
+#drawing-box {
+  width: 100%;
+  max-height: 60%;
+  margin: 8px 0;
+  border-radius: 16px;
+}
+
+#drawing-box > svg {
+  width: 100%;
+  height: 60vh;
+}
+
+/* Forms */
+#tabContent {
+  padding: 8px;
+}
+
+#tabContent .form-stack,
+#tabContent button {
+  margin: 8px;
+}
+
+#tabContent .form-stack > * {
+  margin: 2px;
+}
+
+#tabContent input[type=number] {
+  text-align: right;
+}
+
+#tabContent input[type=number]::-webkit-inner-spin-button, 
+#tabContent input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
 }
 
 .sm-cell {
-  max-width: 50px;
+  max-width: 35px;
 }
 
 .md-cell {
-  max-width: 75px;
+  max-width: 80px;
 }
 
 .lg-cell {
-  width: 100px;
+  width: 120px;
 }
 
 .xl-cell {
-  width: 125px;
+  width: 150px;
 }
 
-.cell-input {
-  width: 100%;
+/* Tabelas */
+#lines-table, 
+#points-table {
+  font-size: 12px !important;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-
-#drawing-area {
-  width: 100%;
-  height: 75vh;
-  padding: 12px;
-  border: black;
+th {
+  text-align: center;
 }
