@@ -40,197 +40,209 @@
 
   <!-- Container -->
   <div class="container">
-     <!-- Bloco de desenho -->
-    <div id="drawing-row" class="row">
-      <div id="drawing-box" class="border rounded">
-        <svg id="drawing-area" xmlns="http://www.w3.org/2000/svg">
+    <!-- Bloco de desenho -->
+    <div id="drawing-row" class="row my-2">
+      <div id="planview-pane" class="border rounded col mx-2">
+        <svg id="planview-area" xmlns="http://www.w3.org/2000/svg">
           <g id="points-container"></g>
           <g id="lines-container"></g>
         </svg>
       </div>
     </div>
     <!-- Fim do bloco de desenho -->
-    <!-- Bloco de abas --> 
-    <nav>
-      <div class="row nav nav-tabs" id="form-tabs" role="tablist">
-        <a class="nav-item nav-link active" id="points-tab" data-toggle="tab" href="#points-pane" role="tab" aria-controls="points-pane" aria-selected="true">Pontos</a>
-        <a class="nav-item nav-link" id="lines-tab" data-toggle="tab" href="#lines-pane" role="tab" aria-controls="lines-pane" aria-selected="false">Trechos</a>
-      </div>
-    </nav>
-    <!-- Fim do Bloco de abas -->
-    <!-- Bloco dos painéis com o conteúdo das abas -->
-    <div id="tabContent" class="row tab-content border border-top-0">
-      <!-- Painel de pontos-->
-      <div id="points-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="points-tab">
-        <!-- Entrada de dados de pontos -->
-        <form id="point-input-row" class="form-row">
-          <div class="form-stack">
-            <label for="point-id">Id</label>
-            <input data-type="id" id="point-id" class="form-control text-center md-cell">
-          </div>
-          <div class="form-stack">
-            <label for="point-x">Coord. X (m)</label>
-            <input type="number" step="0.001" data-type="x" id="point-x" class="form-control lg-cell">
-          </div>
-          <div class="form-stack">
-            <label for="point-y">Coord. Y (m)</label>
-            <input type="number" step="0.001" data-type="y" id="point-y" class="form-control lg-cell">
-          </div>
-          <div class="form-stack">
-            <label for="point-z">NT (m)</label>
-            <input type="number" step="0.001" data-type="z" id="point-z" class="form-control lg-cell">
-          </div>
-          <button class="btn btn-primary" type="button" id="gerarPontosBtn">Gerar pontos</button>
-        </form>
-        <!-- Fim da entrada de dados de pontos -->
-        <!-- Tabela de pontos -->
-        <table id="points-table" class="table table-hover table-sm table-responsive">
-          <!-- Cabeçalho da tabela de pontos -->
-          <thead>
-            <th class="sm-cell">Nome</th>
-            <th class="xl-cell">X (m)</th>
-            <th class="xl-cell">Y (m)</th>
-            <th class="lg-cell">Nível Terr. (m)</th>
-          </thead>
-          <!-- Fim do cabeçalho da tabela de pontos --> 
-          <!-- Corpo da tabela de pontos -->
-          <tbody id="points-tbody">
-          </tbody>
-          <!-- Fim do corpo da tabela de pontos -->
-        </table>
-        <!-- Fim da tabela de pontos -->
-      </div>
-      <!-- Fim do painel de pontos -->
-      <!-- Painel de trechos (lines) -->
-      <div id="lines-pane" class="tab-pane fade row px-2" role="tabpanel" aria-labelledby="lines-tab">
-        <!-- Entrada de dados dos trechos -->
-        <form id="line-input-row" class="form-row ml-2">
-          <!-- Dados do ponto a montante em linha -->
-          <fieldset class="col-xs-12 border rounded mx-2">
-            <legend class="col-form-label w-auto px-2"><strong>Ponto Montante</strong></legend>
-            <div class="form-row">
-              <div class="form-stack col-auto">
-                <label for="p1-id">Id</label>
-                <select data-type="p1-id" id="p1-id" class="form-control md-cell"></select>
-              </div>
-              <div class="form-stack col-auto">
-                <label for="prof1">Prof (m)</label>
-                <input type="number" step="0.001" data-type="prof1" id="prof1" class="form-control md-cell">
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="zf1">NF (m)</label>
-                <input type="number" step="0.001" data-type="zf1" id="zf1" class="form-control lg-cell" disabled>
-              </div>
+    <!-- Bloco de abas -->
+    <!-- Bloco de dados -->
+    <div class="m-2">
+      <nav>
+        <div class="row nav nav-tabs" id="form-tabs" role="tablist">
+          <a class="nav-item nav-link active" id="points-tab" data-toggle="tab" href="#points-pane" role="tab" aria-controls="points-pane" aria-selected="true">Pontos</a>
+          <a class="nav-item nav-link" id="lines-tab" data-toggle="tab" href="#lines-pane" role="tab" aria-controls="lines-pane" aria-selected="false">Trechos</a>
+        </div>
+      </nav>
+      <!-- Fim do Bloco de abas -->
+      <!-- Bloco dos painéis com o conteúdo das abas -->
+      <div id="tabContent" class="row tab-content border border-top-0">
+        <!-- Painel de pontos-->
+        <div id="points-pane" class="tab-pane fade show active" role="tabpanel" aria-labelledby="points-tab">
+          <!-- Entrada de dados de pontos -->
+          <form id="point-input-row" class="form-row ml-2">
+            <div class="form-stack">
+              <label for="point-id">Id</label>
+              <input type="number" step="1" data-type="id" id="point-id" class="form-control form-control-sm sm-cell">
             </div>
-          </fieldset>
-          <!-- Fim dos dados do ponto a montante em linha -->
-          <!-- Dados do ponto a jusante em linha -->
-          <fieldset class="col-xs-12 border rounded mx-2">
-            <legend class="col-form-label w-auto px-2"><strong>Ponto Jusante</strong></legend>
-            <div class="form-row">
-              <div class="form-stack col-auto">
-                <label for="p2-id">Id</label>
-                <select data-type="p2-id" id="p2-id" class="form-control md-cell"></select>              
-              </div>
-              <div class="form-stack col-auto">
-                <label for="prof2">Prof (m)</label>
-                <input type="number" step="0.001" data-type="prof2" id="prof2" class="form-control md-cell"></td>
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="zf2">NF (m)</label>
-                <input type="number" step="0.001" data-type="zf2" id="zf2" class="form-control lg-cell" disabled></td>
-              </div>
+            <div class="form-stack">
+              <label for="point-type">Tipo</label>
+              <select data-type="type" id="point-type" class="form-control form-control-sm text-center md-cell">
+                <option value="PV">PV</option>
+                <option value="TILP">TIL Passagem</option>
+                <option value="TILC">TIL Radial/Condominial</option>
+              </select>
             </div>
-          </fieldset>
-          <!-- Fim dos dados do ponto a jusante em linha -->
-          <div class="w-100"></div>
-          <!-- Dados do trecho em linha -->
-          <fieldset class="col mx-2">
-            <legend class="col-form-label px-2"><strong>Trecho</strong></legend>
-            <div class="form-row">
-              <div class="form-stack col-auto">
-                <label for="line-id">Id</label>
-                <input data-type="id" id="line-id" class="form-control md-cell text-center"></input>
-              </div>
-              <div class="form-stack col-auto">
-                <label for="diam">D (mm)</label>
-                <input type="number" step="50" data-type="diam" id="diam" class="form-control md-cell">
-              </div>
-              <div class="form-stack col-auto">
-                <label for="material">Material (m)</label>
-                <select data-type="material" id="material" class="form-control md-cell">
-                  <option value="PVC">PVC</option>
-                  <option value="FoFo">FoFo</option>
-                  <option value="MBV">MBV</option>
-                  <option value="CA">CA</option>
-                </select>
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="dxy">Dist (m)</label>
-                <input type="number" data-type="dxy" step="0.001" id="" class="form-control md-cell" disabled>
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="slope">Decl (%)</label>
-                <input type="number" step="0.001" data-type="slope" id="slope" class="form-control md-cell" disabled>
-              </div>
-              <div class="form-stack col-auto">
-                <label for="flow">Q (L/s)</label>
-                <input type="number" step="0.001" data-type="flow" id="flow" class="form-control md-cell">
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="yD">y/D (%)</label>
-                <input type="number" step="0.001" data-type="yD" id="yD" class="form-control md-cell" disabled>
-              </div>
-              <div class="form-stack disabled col-auto">
-                <label for="TT">TT (Pa)</label>
-                <input type="number" step="0.001" data-type="TT" id="TT" class="form-control md-cell" disabled>
-              </div>
-              <button type="button" id="gerarTrechosBtn" class="btn btn-primary col-auto">Gerar trechos</button>
+            <div class="form-stack">
+              <label for="point-x">Coord. X (m)</label>
+              <input type="number" step="0.001" data-type="x" id="point-x" class="form-control form-control-sm lg-cell">
             </div>
-          </fieldset>
-          <!-- Fim dos dados do trecho em linha -->
-        </form>
-        <!-- Fim da entrada de dados dos trechos -->
-        <!-- Tabela de trechos -->
-        <table id="lines-table" class="table table-hover table-sm table-responsive">
-          <colgroup span="3"></colgroup>
-          <colgroup span="3"></colgroup>
-          <colgroup span="8"></colgroup>          
-          <!-- Cabeçalho da tabela de trechos -->
-          <thead>
-            <tr>
-              <th colspan="3" scope="colgroup">PV Montante</th>
-              <th colspan="3" scope="colgroup">PV Jusante</th>  
-              <th colspan="8" scope="colgroup">Trecho</th>
-            </tr>
-            <tr>
-              <th class="sm-cell">Id</th>
-              <th class="md-cell">Prof. (m)</th>
-              <th class="md-cell">NF (m)</th>
-              <th class="sm-cell">Id</th>
-              <th class="md-cell">Prof. (m)</th>  
-              <th class="md-cell">NF (m)</th>
-              <th class="sm-cell">Id</th>
-              <th class="md-cell">D (mm)</th>
-              <th class="md-cell">Mat.</th>
-              <th class="md-cell">Q (l/s)</th>
-              <th class="md-cell">Dist. (m)</th>
-              <th class="md-cell">Decl. (%)</th>
-              <th class="md-cell">y/D (%)</th>
-              <th class="md-cell">TT (Pa)</th>                  
-            </tr>
-          </thead>
-          <!-- Fim do cabeçalho da tabela de trechos -->
-          <!-- Corpo da tabela de trechos -->
-          <tbody id="lines-tbody">
-          </tbody>
-          <!-- Fim do corpo da tabela de trechos -->
-        </table>
-        <!-- Fim da tabela de trechos -->
+            <div class="form-stack">
+              <label for="point-y">Coord. Y (m)</label>
+              <input type="number" step="0.001" data-type="y" id="point-y" class="form-control form-control-sm lg-cell">
+            </div>
+            <div class="form-stack">
+              <label for="point-z">NT (m)</label>
+              <input type="number" step="0.001" data-type="z" id="point-z" class="form-control form-control-sm lg-cell">
+            </div>
+            <button class="btn btn-primary" type="button" id="gerarPontosBtn">Gerar pontos</button>
+          </form>
+          <!-- Fim da entrada de dados de pontos -->
+          <!-- Tabela de pontos -->
+          <table id="points-table" class="table table-hover table-sm table-responsive">
+            <!-- Cabeçalho da tabela de pontos -->
+            <thead>
+              <th class="md-cell">Id</th>
+              <th class="md-cell">Tipo</th>
+              <th class="lg-cell">X (m)</th>
+              <th class="lg-cell">Y (m)</th>
+              <th class="lg-cell">Nível Terr. (m)</th>
+            </thead>
+            <!-- Fim do cabeçalho da tabela de pontos --> 
+            <!-- Corpo da tabela de pontos -->
+            <tbody id="points-tbody">
+            </tbody>
+            <!-- Fim do corpo da tabela de pontos -->
+          </table>
+          <!-- Fim da tabela de pontos -->
+        </div>
+        <!-- Fim do painel de pontos -->
+        <!-- Painel de trechos (lines) -->
+        <div id="lines-pane" class="tab-pane fade row px-2" role="tabpanel" aria-labelledby="lines-tab">
+          <!-- Entrada de dados dos trechos -->
+          <form id="line-input-row" class="form-row ml-2">
+            <!-- Dados do ponto a montante em linha -->
+            <fieldset class="col-xs-12 border rounded mx-2">
+              <legend class="col-form-label w-auto px-2"><strong>Ponto Montante</strong></legend>
+              <div class="form-row">
+                <div class="form-stack col-auto">
+                  <label for="p1-id">Id</label>
+                  <select data-type="p1-id" id="p1-id" class="form-control form-control-sm md-cell"></select>
+                </div>
+                <div class="form-stack col-auto">
+                  <label for="prof1">Prof (m)</label>
+                  <input type="number" step="0.001" data-type="prof1" id="prof1" class="form-control form-control-sm md-cell">
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="zf1">NF (m)</label>
+                  <input type="number" step="0.001" data-type="zf1" id="zf1" class="form-control form-control-sm lg-cell" disabled>
+                </div>
+              </div>
+            </fieldset>
+            <!-- Fim dos dados do ponto a montante em linha -->
+            <!-- Dados do ponto a jusante em linha -->
+            <fieldset class="col-xs-12 border rounded mx-2">
+              <legend class="col-form-label w-auto px-2"><strong>Ponto Jusante</strong></legend>
+              <div class="form-row">
+                <div class="form-stack col-auto">
+                  <label for="p2-id">Id</label>
+                  <select data-type="p2-id" id="p2-id" class="form-control form-control-sm md-cell"></select>              
+                </div>
+                <div class="form-stack col-auto">
+                  <label for="prof2">Prof (m)</label>
+                  <input type="number" step="0.001" data-type="prof2" id="prof2" class="form-control form-control-sm md-cell"></td>
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="zf2">NF (m)</label>
+                  <input type="number" step="0.001" data-type="zf2" id="zf2" class="form-control form-control-sm lg-cell" disabled></td>
+                </div>
+              </div>
+            </fieldset>
+            <!-- Fim dos dados do ponto a jusante em linha -->
+            <div class="w-100"></div>
+            <!-- Dados do trecho em linha -->
+            <fieldset class="col mx-2">
+              <legend class="col-form-label px-2"><strong>Tubulação</strong></legend>
+              <div class="form-row">
+                <div class="form-stack col-auto">
+                  <label for="line-id">Id</label>
+                  <input data-type="id" id="line-id" class="form-control form-control-sm md-cell text-center"></input>
+                </div>
+                <div class="form-stack col-auto">
+                  <label for="diam">D (mm)</label>
+                  <input type="number" step="50" data-type="diam" id="diam" class="form-control form-control-sm md-cell">
+                </div>
+                <div class="form-stack col-auto">
+                  <label for="material">Material (m)</label>
+                  <select data-type="material" id="material" class="form-control form-control-sm md-cell">
+                    <option value="PVC">PVC</option>
+                    <option value="FoFo">FoFo</option>
+                    <option value="MBV">MBV</option>
+                    <option value="CA">CA</option>
+                  </select>
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="dxy">Dist (m)</label>
+                  <input type="number" data-type="dxy" step="0.001" id="" class="form-control form-control-sm md-cell" disabled>
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="slope">Decl (%)</label>
+                  <input type="number" step="0.001" data-type="slope" id="slope" class="form-control form-control-sm md-cell" disabled>
+                </div>
+                <div class="form-stack col-auto">
+                  <label for="flow">Q (L/s)</label>
+                  <input type="number" step="0.001" data-type="flow" id="flow" class="form-control form-control-sm md-cell">
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="yD">y/D (%)</label>
+                  <input type="number" step="0.001" data-type="yD" id="yD" class="form-control form-control-sm md-cell" disabled>
+                </div>
+                <div class="form-stack disabled col-auto">
+                  <label for="TT">TT (Pa)</label>
+                  <input type="number" step="0.001" data-type="TT" id="TT" class="form-control form-control-sm md-cell" disabled>
+                </div>
+                <button type="button" id="gerarTrechosBtn" class="btn btn-primary col-auto">Gerar trechos</button>
+              </div>
+            </fieldset>
+            <!-- Fim dos dados do trecho em linha -->
+          </form>
+          <!-- Fim da entrada de dados dos trechos -->
+          <!-- Tabela de trechos -->
+          <table id="lines-table" class="table table-hover table-sm table-responsive">
+            <colgroup span="3"></colgroup>
+            <colgroup span="3"></colgroup>
+            <colgroup span="8"></colgroup>          
+            <!-- Cabeçalho da tabela de trechos -->
+            <thead>
+              <tr>
+                <th colspan="3" scope="colgroup">PV Montante</th>
+                <th colspan="3" scope="colgroup">PV Jusante</th>  
+                <th colspan="8" scope="colgroup">Trecho</th>
+              </tr>
+              <tr>
+                <th class="sm-cell">Id</th>
+                <th class="md-cell">Prof. (m)</th>
+                <th class="md-cell">NF (m)</th>
+                <th class="sm-cell">Id</th>
+                <th class="md-cell">Prof. (m)</th>  
+                <th class="md-cell">NF (m)</th>
+                <th class="sm-cell">Id</th>
+                <th class="md-cell">D (mm)</th>
+                <th class="md-cell">Mat.</th>
+                <th class="md-cell">Dist. (m)</th>
+                <th class="md-cell">Decl. (%)</th>
+                <th class="md-cell">Q (l/s)</th>
+                <th class="md-cell">y/D (%)</th>
+                <th class="md-cell">TT (Pa)</th>                  
+              </tr>
+            </thead>
+            <!-- Fim do cabeçalho da tabela de trechos -->
+            <!-- Corpo da tabela de trechos -->
+            <tbody id="lines-tbody">
+            </tbody>
+            <!-- Fim do corpo da tabela de trechos -->
+          </table>
+          <!-- Fim da tabela de trechos -->
+        </div>
+        <!-- Fim do painel de trechos -->
       </div>
-      <!-- Fim do painel de trechos -->
+      <!-- Fim do sub-bloco dos paineis -->
     </div>
-    <!-- Fim do sub-bloco dos paineis -->
   </div>
   <!-- Fim do container -->
 
@@ -243,10 +255,11 @@
 
 <template id="point-row-template">
   <tr class="point-display-row" data-id="">
-    <td class="sm-cell text-center" scope="row"></tdg>
-    <td class="lg-cell text-right"></td>
-    <td class="lg-cell text-right"></td>
-    <td class="md-cell text-right"></td>
+    <td class="sm-cell text-center" data-type="id" scope="row"></td> <!-- Id -->
+    <td class="sm-cell text-center" data-type="type"></td> <!-- Id -->
+    <td class="lg-cell text-right" data-type="x"></td> <!-- X -->
+    <td class="lg-cell text-right" data-type="y"></td> <!-- Y -->
+    <td class="md-cell text-right" data-type="z"></td> <!-- Z (Elevation) -->
   </tr>
 </template>
 <!-- Template de linha da tabela dos trechos -->
