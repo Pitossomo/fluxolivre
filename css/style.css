@@ -1,5 +1,5 @@
 /* Desenho */
-.container {
+.container-fluid {
   font-size: 12px !important;
 }
 
@@ -7,15 +7,6 @@
   min-height: 40vh;
   height: 40vh;
   max-height: 40vh;
-}
-
-#planview-pane,
-#longview-pane {
-  width: 100%;
-  max-height: 100%;
-  min-height: 100%;
-  margin: 4px 0;
-  border-radius: 16px;
 }
 
 #planview-area,
@@ -26,32 +17,36 @@
 }
 
 /* Forms */
-#tabContent {
+#content {
   padding: 4px;
 }
 
-#tabContent .form-stack {
+#content .form-stack {
   margin: 0 2px 4px;
 }
 
-#tabContent button {
+#content button {
   margin: 4px;
 }
 
-#tabContent .form-stack > * {
+#content .form-stack > * {
   margin: 2px;
 }
 
-#tabContent input, #tabContent select {
+#content label {
+  text-align: center;
+}
+
+#content input, #content select {
   font-size: 12px;  
 }
 
-#tabContent input[type=number] {
+#content input[type=number] {
   text-align: right;
 }
 
-#tabContent input[type=number]::-webkit-inner-spin-button, 
-#tabContent input[type=number]::-webkit-outer-spin-button { 
+#content input[type=number]::-webkit-inner-spin-button, 
+#content input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
 }
 
