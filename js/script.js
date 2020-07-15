@@ -1,6 +1,6 @@
 /* Este script gera projetos de esgoto em planta, conforme padrão SANEAGO. */
 
-const DRAW_AREA_OFFSET = 0.10;
+const DRAW_AREA_OFFSET = 0.06;
 const DRAW_AREA_MINIMAL_DIMENSION = 100;
 const DEC_PLACES = 2;
 const VERT_EXAG = 10;
@@ -45,9 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
-  // adiciona evento onclick no botão "Gerar trechos"
+  // adiciona evento onclick no botão "Gerar trechos" - Insere linha na tabela
   document.querySelector("#addRow").onclick = () => {
-
     // seleciona a linha de input de linhas
     inputRow = document.querySelector("#line-input-row");
     // resgata os atributos
@@ -90,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inputRow.querySelector('[data-type="TT"]').value = "";
   }
 
-  // adiciona evento onclick no botão "Desenhar" 
+  // adiciona evento onclick no botão "Desenhar" - Desenha as linhas inseridas na tabela
   document.querySelector("#desenhar").onclick = () => {
     linesCont = document.querySelector("#lines-container");
     xAcum = 0;
@@ -113,6 +112,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     zoomExtents(linesCont, document.querySelector("#view-area"));
   }
+
+  // adiciona evento on click no botão "Salvar" - Salva em arquivo
+  document.querySelector("#salvar").onclick = () => {
+    // cria texto a ser inserido no arquivo
+    data = "";
+    // varre a tabela
+    rows = document.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      cells = row.querySelectorAll(":scope > td");
+      rowDict = dataFromTableRow(cells, true);
+      // insere os dados no arquivo na sequencia determinada para cada linha da tabela 
+      data += rowDict["id"] + " " + rowDict["nt-mont"] + " " + rowDict["prof-mont"] + " " + 
+        rowDict["nt-jus"] + " " + rowDict["prof-jus"] + " " + rowDict["diam"] + " " +
+        rowDict["material"] + " " + rowDict["dist"] + " " + rowDict["flow"] + "\n";
+    });
+    console.log(data);
+    // cria data uri para baixar o arquivo  
+    var el = document.createElement('a');
+    el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+    el.setAttribute('download', 'perfil.esg');
+    // simula um click em um link para realizar o download
+    el.style.display = 'none';
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
+  }
 });
 
 function greetings() {
@@ -134,18 +159,20 @@ function dataFromInputRow(row, reset=false) {
 }
 
 // Resgata os valores em uma linha de tabela e retorna um dicionário
-function dataFromTableRow(row) {
+function dataFromTableRow(row, asString=false) {
   dict = {}
+  // define o par key, value para cada célula da linha
   for (cell of row) {
     key = cell.getAttribute("data-type");
     val = cell.innerText;
-    numVal = val = Number(val);
-    if (numVal == val) { val = numVal }
+    // se o value for um número e o parâmetro asString não exiga a saída como string, 
+    // então converte para o tipo Number, caso contrário mantém a string
+    if (!asString && !isNaN(val)) { val = Number(val) }
+    // insere o par key, value no dicionário
     dict[key] = val;
   }
   return dict;
 }
-
 
 // Check if a row with a specific id is already on the table
 function isIdOnTable(id) {
