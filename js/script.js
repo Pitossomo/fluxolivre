@@ -4,6 +4,7 @@ const DRAW_AREA_OFFSET = 0.06;
 const DRAW_AREA_MINIMAL_DIMENSION = 100;
 const DEC_PLACES = 2;
 const VERT_EXAG = 10;
+const headers = ["id", "nt-mont", "prof-mont", "nt-jus", "prof-jus", "diam", "material", "dist", "flow"]; //TODO - remove hardcoded headers
 
 document.addEventListener("DOMContentLoaded", () => {
   // cria a variável para armazenar os pontos
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     item.addEventListener("blur", event => {
       if (!isEmptyText(item.value)) {
         // formata o número da forma adequada ao step de cada input
-        enterFormatedNumber(item.value, item);
+        numberToInput(item.value, item);
         
         // calcula a declividade (se possível)
         let dist = document.querySelector("#dist").value;
@@ -34,25 +35,23 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isEmptyText(dist) || isEmptyText(ntMont) || isEmptyText(profMont) || isEmptyText(ntJus) || isEmptyText(profJus)) {
           return;
         } else {
-          let slope = ((ntMont - profMont) - (ntJus - profJus))/dist*100;
-          slopeInput = document.querySelector("#slope");
-          enterFormatedNumber(slope, slopeInput);
+          numberToInput(slope(ntMont, profMont, ntJus, profJus, dist), document.querySelector("#slope"));
         }
 
         // calcula a tensão trativa e a lâmina (se possível)
         // TODO
       }
-    })
+    });
   })
 
   // adiciona evento onclick no botão "Gerar trechos" - Insere linha na tabela
   document.querySelector("#addRow").onclick = () => {
     // seleciona a linha de input de linhas
-    inputRow = document.querySelector("#line-input-row");
+    let inputRow = document.querySelector("#line-input-row");
     // resgata os atributos
-    rowDict = dataFromInputRow(inputRow);
+    let rowDict = dataFromInputRow(inputRow);
     // solicita confirmação para sobrescrever, em caso de linhas com mesmo id
-    overwrite = false;
+    let overwrite = false;
     if (isIdOnTable(rowDict["id"])) {
       overwrite = confirm("Já existe um trecho com o nome indicado. Deseje sobrescrevê-lo?");
       if (!overwrite) {
@@ -65,22 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // TODO
 
     // Insere ou sobrescreve a linha na tabela
-    tbody = document.getElementById("lines-tbody");
-    if (!overwrite) {
-      temp = document.querySelector("#line-row-template").content.querySelector("tr");
-      row = document.importNode(temp, true);
-    } else {
-      row = tbody.querySelector("[data-id='"+ rowDict["id"] +"']");
-    }
-    dataToTableRow(rowDict, row);
-    if (!overwrite) {
-      tbody.appendChild(row);
-    }
+    dataToTableRow(rowDict, overwrite);
     
     // Altera os valores dos inputs e prepara para a próxima inclusão
-    enterFormatedNumber(Number(rowDict["id"]) + 1, inputRow.querySelector('[data-type="id"]'));
-    enterFormatedNumber(rowDict["nt-jus"],inputRow.querySelector('[data-type="nt-mont"]'));
-    enterFormatedNumber(rowDict["prof-jus"],inputRow.querySelector('[data-type="prof-mont"'));
+    numberToInput(Number(rowDict["id"]) + 1, inputRow.querySelector('[data-type="id"]'));
+    numberToInput(rowDict["nt-jus"],inputRow.querySelector('[data-type="nt-mont"]'));
+    numberToInput(rowDict["prof-jus"],inputRow.querySelector('[data-type="prof-mont"'));
     inputRow.querySelector('[data-type="nt-jus"]').value = "";
     inputRow.querySelector('[data-type="prof-jus"]').value = "";
     inputRow.querySelector('[data-type="dist"]').value = "";
@@ -91,9 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // adiciona evento onclick no botão "Desenhar" - Desenha as linhas inseridas na tabela
   document.querySelector("#desenhar").onclick = () => {
+    // seleciona o container de linhas <g> que será excluído
     linesCont = document.querySelector("#lines-container");
-    xAcum = 0;
+    // limpa o container 
+    while (linesCont.firstChild) linesCont.removeChild(linesCont.firstChild);
+    // inicializa e zera a extensão acumulada do trecho
+    xAcum = 0;  
+    // seleciona as linhas a serem desenhadas 
     rows = document.querySelectorAll("tbody tr");
+    // varre as linhas, desenhando cada uma
     rows.forEach(row => {
       cells = row.querySelectorAll(":scope > td");
       rowDict = dataFromTableRow(cells);
@@ -104,18 +99,18 @@ document.addEventListener("DOMContentLoaded", () => {
       ntJus = rowDict["nt-jus"];
       nfJus = ntJus - rowDict["prof-jus"];
       // desenha a linha do terreno
-      drawLine(xMont, VERT_EXAG*ntMont, xAcum, VERT_EXAG*ntJus, rowDict["id"], linesCont, overwrite);
+      drawLine(xMont, VERT_EXAG*ntMont, xAcum, VERT_EXAG*ntJus, rowDict["id"], linesCont);
       // desenha a geratriz inferior da tubulação
-      drawLine(xMont, VERT_EXAG*nfMont, xAcum, VERT_EXAG*nfJus, rowDict["id"], linesCont, overwrite);            
+      drawLine(xMont, VERT_EXAG*nfMont, xAcum, VERT_EXAG*nfJus, rowDict["id"], linesCont);            
       // desenha a geratriz superior da tubulação
-      drawLine(xMont, VERT_EXAG*(nfMont - rowDict["diam"]/1000), xAcum, VERT_EXAG*(nfJus - rowDict["diam"]/1000), rowDict["id"], linesCont, overwrite);
+      drawLine(xMont, VERT_EXAG*(nfMont - rowDict["diam"]/1000), xAcum, VERT_EXAG*(nfJus - rowDict["diam"]/1000), rowDict["id"], linesCont);
     });
+    // altera a escala do zoom para conter todo o desenho
     zoomExtents(linesCont, document.querySelector("#view-area"));
   }
 
-  // adiciona evento on click no botão "Salvar" - Salva em arquivo
+  // adiciona evento on click no botão "Salvar" - Salva em arquivo '.esg'
   document.querySelector("#salvar").onclick = () => {
-    // cria texto a ser inserido no arquivo
     data = "";
     // varre a tabela
     rows = document.querySelectorAll("tbody tr");
@@ -123,11 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cells = row.querySelectorAll(":scope > td");
       rowDict = dataFromTableRow(cells, true);
       // insere os dados no arquivo na sequencia determinada para cada linha da tabela 
-      data += rowDict["id"] + " " + rowDict["nt-mont"] + " " + rowDict["prof-mont"] + " " + 
-        rowDict["nt-jus"] + " " + rowDict["prof-jus"] + " " + rowDict["diam"] + " " +
-        rowDict["material"] + " " + rowDict["dist"] + " " + rowDict["flow"] + "\n";
+      headers.forEach(header => data += rowDict[header] + " ");
+      data = data.slice(0,-1) + "\n";
     });
-    console.log(data);
     // cria data uri para baixar o arquivo  
     var el = document.createElement('a');
     el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
@@ -138,11 +131,39 @@ document.addEventListener("DOMContentLoaded", () => {
     el.click();
     document.body.removeChild(el);
   }
-});
 
-function greetings() {
-  console.log("Hi, i'm a circle") 
-}
+  /* adiciona evento on click no botão "Carregar" - Carrega dados de um arquivo '.esg'
+  //
+  // Ao ser clikado, o botão "Carregar" simula um click no 'file input' invisível (display: none)
+  // que, por sua vez, solicita que o usuário selecione um arquivo a ser carregado, lido e colocado na tabela 
+  */
+  fileInput = document.querySelector('#abrirArquivo');
+  fileInput.onchange = () => {
+    file = fileInput.files[0];
+    reader = new FileReader();
+    // TODO
+    reader.onload = () => {
+      rows = reader.result.split("\n");
+      rows.forEach(row => {
+        if (!isEmptyText(row)) {
+          values = row.split(" ");
+          dict = {}
+          values.forEach((val, index) => dict[headers[index]] = val);
+          dataToTableRow(dict);
+        }
+      });
+    };
+    reader.readAsText(file);
+  }
+  document.querySelector("#carregar").onclick = () => {
+    // Remove linhas existentes na tabela, se houver, após confirmação pelo usuário
+    rowsInColumn = document.querySelectorAll("tbody tr");
+    if ((rowsInColumn.length > 0) && confirm("As linhas existentes na tabela serão removidas. Deseja continuar?")) {
+      rowsInColumn.forEach(row => row.remove());
+    }
+    fileInput.click(); // simula o click no file input invisível
+  }
+});
 
 // Resgata os valores em uma linha de inputs e retorna um dicionario
 //   *OBS: o segundo parâmetro é um boolean que informa se os valores da linha serão resetados ou não
@@ -181,13 +202,39 @@ function isIdOnTable(id) {
 }
 
 // Insert data from a dictionary to a table row <tr> NodeList
-function dataToTableRow(dict, row) {
-  cols = row.querySelectorAll("td");
-  for (td of cols) {
+function dataToTableRow(dict, overwrite=false) {
+  tbody = document.getElementById("lines-tbody"); // Seleciona o corpo da tabela (tbody) 
+  
+  // Calcula a declividade, caso ainda não computada
+  if (!dict["slope"]) {
+    dict["slope"] = formatNumber(
+      slope(dict["nt-mont"], dict["prof-mont"], dict["nt-jus"], dict["prof-jus"], dict["dist"]),
+      "slope"
+    );
+  } 
+  // TODO - Calcula a relação lâmina/diâmetro (%), caso ainda não computada 
+  // TODO - tensão trativa
+
+  if (!overwrite) {   // caso não haja sobrescrição de linha, cria uma nova linha a partir do template html
+    temp = document.querySelector("#line-row-template").content.querySelector("tr");  
+    row = document.importNode(temp, true);
+  } else {  // caso haja sobrescrição, seleciona a linha a ser sobrescrita
+    row = tbody.querySelector("[data-id='"+ dict["id"] +"']");
+  }
+
+  // varre as celulas da linha da linha
+  cells = row.querySelectorAll("td");
+  for (td of cells) {
     datatype = td.getAttribute("data-type");
     if (datatype) td.textContent = dict[datatype];
   }
   row.setAttribute("data-id", dict["id"]);
+  if (!overwrite) tbody.appendChild(row);
+}
+
+// Calcula a declividade em cm/m ou %
+function slope(ntMont, profMont, ntJus, profJus, dist) {
+  return ((ntMont - profMont) - (ntJus - profJus))/dist*100
 }
 
 // Calcula a lâmina dágua em relação ao diâmetro do tubo (y/D)
@@ -281,11 +328,18 @@ function isEmptyText(text) {
   return (!text.trim().length);
 }
 
-// Insere um valor formatado em um campo input number
-function enterFormatedNumber(val, field) {
+// Insere um valor formatado em um campo
+function numberToInput(val, field) {
   let precisao = Math.max(-Math.log10(field.getAttribute("step")),0);
   field.value = Number(val).toFixed(precisao);      
   return;
+}
+
+// Insere um valor com base no step definido
+function formatNumber(val, datatype) {
+  let field = document.querySelector("#"+datatype);
+  let precisao = Math.max(-Math.log10(field.getAttribute("step")),0);
+  return Number(val).toFixed(precisao);
 }
 
 /* NOT USED - TODO
